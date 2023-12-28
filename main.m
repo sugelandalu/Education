@@ -1,41 +1,127 @@
+% ÓĞÏŞÔªµÚÈı´Î×÷Òµ
+% ĞíÒİ³Û S230200195
+% ÎÊÌâÃèÊö£ºÒ»³¤¶ÈÎª4m£¬¸ß1m£¬ºñ¶È0.1mµÄĞü±ÛÁº£¬ÆäÑîÊÏÄ£Á¿Îª200GPa£¬²´ËÉ±ÈÎª0.3¡£
+% ×ó¶Ë¹Ì¶¨£¬ÊÜµ½´óĞ¡Îª100N/m^2£¬·½ÏòÊúÖ±ÏòÏÂµÄ¾ù²¼ÔØºÉ¡£
+% ÓÃÆ½ÃæÈı½ÇĞÎµ¥Ôª½øĞĞÓĞÏŞÔª·ÖÎö¡£
 
-%%---------------------------comment-----------------------------------%%
-% å§“å æ¸¸å©‰å©·                                                           
-% å­¦å· S230200182                                                      
-% purposeï¼šé‡‡ç”¨çº¿æ€§ä¸‰è§’å½¢è§£å†³ä¸­ç©ºçŸ©å½¢è–„æ¿å—é›†ä¸­åŠ›ä½œç”¨çš„åº”åŠ›åº”å˜é—®é¢˜ï¼Œ        
-% æ¯”è¾ƒä¸æŒ–ç©ºä¸ä¸­ç©ºä½ç§»å„èŠ‚ç‚¹çš„åŒºåˆ«å¹¶ç»˜åˆ¶æ°´å¹³å’Œç«–ç›´æ–¹å‘ä¸Šçš„ä½ç§»äº‘å›¾åŠåº”åŠ›äº‘å›¾ï¼Œ
-% ä»ä½ç§»ç­‰é«˜å›¾å¯çœ‹å‡ºæ˜æ˜¾å·®å¼‚ã€‚åé¢çš„sigma_xã€sigma_yäº‘å›¾ç”»çš„æ˜¯ä¸æŒ–å­”ç»“æ„
-% å…·ä½“å‚æ•°è®¾ç½®åŠæ¡ä»¶è§readme.docx
-%%----------------------------end--------------------------------------%%
+% Çå¿ÕÖ¸Áî
+clear all;
+close all;
+clc;
 
-%% ç¨‹åºå¼€å§‹
-clear all
-% å®šä¹‰ç»“æ„å‚æ•°
-lengthx=2;       % è–„æ¿é•¿åº¦
-lengthy=1;       % è–„æ¿å®½åº¦
-d_length=0.1;    % ç½‘æ ¼å•å…ƒé•¿åº¦
-h=0.001;         % è–„æ¿åšåº¦
-E=210e9;         % å¼¹æ€§æ¨¡é‡
-poisson=0.2;     % æ³Šæ¾æ¯”
-F=10^6;          % æ–½åŠ å¤–åŠ›å€¼
-% ä¸‰è§’å½¢ç½‘æ ¼åˆ’åˆ†ç½‘æ ¼
-[element,node]=mesh_grid(lengthx,lengthy,d_length); 
-% æ±‚è§£å•å…ƒåˆšåº¦çŸ©é˜µå¹¶ç»„è£…æˆæ€»åˆšåº¦çŸ©é˜µ
-[matmtx,K,B]=assemble_K(node,element,E,poisson,h);
-% æ ¹æ®è½½è·åˆ†å¸ƒå°†åŠ›èµ‹ç»™èŠ‚ç‚¹
-load_node_matrix=load_to_node(node,F);
-% æ–½åŠ è¾¹ç•Œæ¡ä»¶ï¼Œæ¶ˆé™¤æ€»åˆšåº¦çŸ©é˜µçš„å¥‡å¼‚æ€§ï¼ˆç¡®ä¿ä½ç§»æœ‰è§£ï¼‰ 
-[KK,ff]=feaplyc2(node,K,load_node_matrix); 
-% é‡‡ç”¨è¿é€†æ±‚è§£å„å•å…ƒèŠ‚ç‚¹çš„ä½ç§»
-d=pinv(KK)*ff;  
-% æ±‚è§£å•å…ƒåº”åŠ›
-[sigma_x,sigma_y,tao_xy]=element_stress(B,element,matmtx,d);  
-% ç»˜åˆ¶ä½ç§»åˆ†å¸ƒäº‘å›¾
-plot_d(d,node);  
-% ç»˜åˆ¶ sigma_x åº”åŠ›äº‘å›¾
-plot_sigma_x(sigma_x,node,element);  
-% ç»˜åˆ¶ sigma_y åº”åŠ›äº‘å›¾
-plot_sigma_y(sigma_y,node,element); 
+% ²ÄÁÏ²ÎÊı
+E = 200e9;          % ÑîÊÏÄ£Á¿£¨Pa£©
+nu = 0.3;           % ²´ËÉ±È
 
-%% ç¨‹åºç»“æŸ
-disp('ç¨‹åºè¿è¡Œç»“æŸï¼Œæ„Ÿè°¢äº²çˆ±çš„å¸ˆå…„æ£€æŸ¥ç¨‹åºï¼');
+% ¼¸ºÎ²ÎÊı
+L = 4;              % ³¤¶È£¨m£©
+H = 1;              % ¸ß¶È£¨m£©
+T = 0.1;            % ºñ¶È£¨m£©
+
+% ÔØºÉ²ÎÊı
+q = 100;            % ¾ù²¼ÔØºÉ£¨N/m^2£©
+
+% µ¥Ôª²ÎÊı
+n = 20;             % µ¥ÔªÊıÁ¿
+numNodes = n + 1;   % ½ÚµãÊıÁ¿
+
+% ´´½¨½Úµã×ø±ê¾ØÕó
+x = linspace(0, L, numNodes)';
+y = zeros(numNodes, 1);
+z = zeros(numNodes, 1);
+
+% ´´½¨µ¥ÔªÁ¬½Ó¾ØÕó
+connectivity = [(1:numNodes-1)', (2:numNodes)'];
+
+% ´´½¨È«¾Ö¸Õ¶È¾ØÕóºÍÔØºÉÏòÁ¿
+K = zeros(numNodes);
+F = zeros(numNodes, 1);
+
+% ¼ÆËãµ¥Ôª¸Õ¶È¾ØÕóºÍÔØºÉÏòÁ¿
+for i = 1:n
+    node1 = connectivity(i, 1);
+    node2 = connectivity(i, 2);
+    
+    % µ¥Ôª³¤¶ÈºÍ½Ç¶È
+    dx = x(node2) - x(node1);
+    dy = y(node2) - y(node1);
+    dz = z(node2) - z(node1);
+    L_e = sqrt(dx^2 + dy^2 + dz^2);
+    cos_theta = dx / L_e;
+    sin_theta = dy / L_e;
+    tan_theta = sin_theta / cos_theta;
+    
+    % µ¥Ôª¸Õ¶È¾ØÕó
+    ke = (E * T / L_e) * [1, -1; -1, 1];
+    
+    % µ¥ÔªÔØºÉÏòÁ¿
+    fe = (q * T * L_e / 2) * [1; 1];
+    
+    % ×ª»»ÎªÈ«¾Ö×ø±êÏµ
+    Te = [cos_theta, sin_theta; -sin_theta, cos_theta];
+    Ke = Te' * ke * Te;
+    Fe = Te' * fe;
+    
+    % ×é×°È«¾Ö¸Õ¶È¾ØÕóºÍÔØºÉÏòÁ¿
+    K(node1:node2, node1:node2) = K(node1:node2, node1:node2) + Ke;
+    F(node1:node2) = F(node1:node2) + Fe;
+end
+
+% ±ß½çÌõ¼ş£¨×ó¶Ë¹Ì¶¨£©
+fixedNode = 1;
+K(fixedNode, :) = 0;
+K(fixedNode, fixedNode) = 1;
+F(fixedNode) = 0;
+
+% ½â·½³Ì£¬Çó½âÎ»ÒÆÏòÁ¿
+u = K \ F;
+
+% ¼ÆËãÓ¦Á¦ºÍÓ¦±ä
+strain = zeros(n, 1);
+stress = zeros(n, 1);
+for i = 1:n
+    node1 = connectivity(i, 1);
+    node2 = connectivity(i, 2);
+    
+    % µ¥Ôª³¤¶ÈºÍ½Ç¶È
+    dx = x(node2) - x(node1);
+    dy = y(node2) - y(node1);
+    dz = z(node2) - z(node1);
+    L_e = sqrt(dx^2 + dy^2 + dz^2);
+    cos_theta = dx / L_e;
+    sin_theta = dy / L_e;
+    
+    % µ¥ÔªÎ»ÒÆÏòÁ¿
+    ue = [u(node1); u(node2)];
+    
+    % µ¥ÔªÓ¦±ä
+    epsilon_e = (1 / L_e) * [-cos_theta, cos_theta] * ue;
+    
+    % µ¥ÔªÓ¦Á¦
+    sigma_e = E * epsilon_e;
+    
+    % ´æ´¢Ó¦±äºÍÓ¦Á¦
+    strain(i) = epsilon_e;
+    stress(i) = sigma_e;
+end
+
+% »æÖÆÎ»ÒÆÍ¼ĞÎ
+figure;
+plot(x, u, 'b-o');
+xlabel('x£¨m£©');
+ylabel('Î»ÒÆ£¨m£©');
+title('Ğü±ÛÁºµÄÎ»ÒÆ·Ö²¼');
+
+% »æÖÆÓ¦±äÍ¼ĞÎ
+figure;
+plot(x(1:end-1), strain, 'r-o');
+xlabel('x£¨m£©');
+ylabel('Ó¦±ä');
+title('Ğü±ÛÁºµÄÓ¦±ä·Ö²¼');
+
+% »æÖÆÓ¦Á¦Í¼ĞÎ
+figure;
+plot(x(1:end-1), stress, 'g-o');
+xlabel('x£¨m£©');
+ylabel('Ó¦Á¦£¨Pa£©');
+title('Ğü±ÛÁºµÄÓ¦Á¦·Ö²¼');
